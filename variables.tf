@@ -100,6 +100,7 @@ variable "ssh_key_name" {
 }
 
 variable "frontend_subnet_ids" {
+  type        = list
   description = "frontend subnet id obtained from vpc creation output"
 }
 
