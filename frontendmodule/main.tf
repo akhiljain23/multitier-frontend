@@ -39,50 +39,50 @@ resource "ibm_is_instance" "frontend-server" {
 ##############################################################################
 
 
-# resource "ibm_is_lb" "webapptier-lb" {
-#   name           = "webapptier"
-#   type           = "public"
-#   subnets        = toset(var.subnet_ids)
-#   resource_group = var.ibm_is_resource_group_id
+resource "ibm_is_lb" "webapptier-lb" {
+  name           = "webapptier"
+  type           = "public"
+  subnets        = toset(var.subnet_ids)
+  resource_group = var.ibm_is_resource_group_id
 
-#   timeouts {
-#     create = "15m"
-#     delete = "15m"
-#   }
-
-
-# }
+  timeouts {
+    create = "15m"
+    delete = "15m"
+  }
 
 
-# resource "ibm_is_lb_listener" "webapptier-lb-listener" {
-#   lb           = ibm_is_lb.webapptier-lb.id
-#   port         = "80"
-#   protocol     = "http"
-#   default_pool = element(split("/", ibm_is_lb_pool.webapptier-lb-pool.id), 1)
-#   depends_on   = [ibm_is_lb_pool.webapptier-lb-pool]
-# }
+}
 
-# resource "ibm_is_lb_pool" "webapptier-lb-pool" {
-#   lb                 = ibm_is_lb.webapptier-lb.id
-#   name               = "webapptier-lb-pool"
-#   protocol           = "http"
-#   algorithm          = "round_robin"
-#   health_delay       = "5"
-#   health_retries     = "2"
-#   health_timeout     = "2"
-#   health_type        = "http"
-#   health_monitor_url = "/"
-#   depends_on         = [ibm_is_lb.webapptier-lb]
-# }
 
-# resource "ibm_is_lb_pool_member" "webapptier-lb-pool-member-zone1" {
-#   count          = var.frontend_count
-#   lb             = ibm_is_lb.webapptier-lb.id
-#   pool           = element(split("/", ibm_is_lb_pool.webapptier-lb-pool.id), 1)
-#   port           = "8080"
-#   target_address = ibm_is_instance.frontend-server[count.index].primary_network_interface[0].primary_ipv4_address
-#   depends_on     = [ibm_is_lb_pool.webapptier-lb-pool]
-# }
+resource "ibm_is_lb_listener" "webapptier-lb-listener" {
+  lb           = ibm_is_lb.webapptier-lb.id
+  port         = "80"
+  protocol     = "http"
+  default_pool = element(split("/", ibm_is_lb_pool.webapptier-lb-pool.id), 1)
+  depends_on   = [ibm_is_lb_pool.webapptier-lb-pool]
+}
+
+resource "ibm_is_lb_pool" "webapptier-lb-pool" {
+  lb                 = ibm_is_lb.webapptier-lb.id
+  name               = "webapptier-lb-pool"
+  protocol           = "http"
+  algorithm          = "round_robin"
+  health_delay       = "5"
+  health_retries     = "2"
+  health_timeout     = "2"
+  health_type        = "http"
+  health_monitor_url = "/"
+  depends_on         = [ibm_is_lb.webapptier-lb]
+}
+
+resource "ibm_is_lb_pool_member" "webapptier-lb-pool-member-zone1" {
+  count          = var.frontend_count
+  lb             = ibm_is_lb.webapptier-lb.id
+  pool           = element(split("/", ibm_is_lb_pool.webapptier-lb-pool.id), 1)
+  port           = "8080"
+  target_address = ibm_is_instance.frontend-server[count.index].primary_network_interface[0].primary_ipv4_address
+  depends_on     = [ibm_is_lb_pool.webapptier-lb-pool]
+}
 
 
 
